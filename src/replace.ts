@@ -11,7 +11,7 @@ export const useReplace: Middleware = async (context, next) => {
   const path = new URL(request.url).pathname;
   const matches: ReplaceEntry[] = [];
   for (const patch of options.replace) {
-    if (patch.path === undefined || patch.path.test(path)) {
+    if (patch.replace.length > 0 && (patch.path === undefined || patch.path.test(path))) {
       patch.replace.forEach((entry) => {
         matches.push(entry);
       });
@@ -21,7 +21,7 @@ export const useReplace: Middleware = async (context, next) => {
   if (matches.length > 0) {
     let data = await response.text();
     matches.forEach(({ from, to }) => {
-      data = data.replace(from, to);
+      data = data.replaceAll(from, to);
     });
     context.response = new Response(data, response);
   }
